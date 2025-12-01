@@ -1,0 +1,329 @@
+{
+	"info": {
+		"_postman_id": "2c0375ab-6c92-4a6f-90f7-30d5448d05c5",
+		"name": "Blood Donor Management API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50342301",
+		"_collection_link": "https://gowshianand-1253920.postman.co/workspace/Gowshika's-Workspace~458c0b2d-1d81-4762-8701-70f1c7769239/collection/50342301-2c0375ab-6c92-4a6f-90f7-30d5448d05c5?action=share&source=collection_link&creator=50342301"
+	},
+	"item": [
+		{
+			"name": "Get All Blood Donor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 1. Validate Response Status Code",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// 2. Validate Response Body Structure",
+							"pm.test(\"Response is a JSON array\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"});",
+							"",
+							"pm.test(\"Response array is not empty\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.be.above(0);",
+							"});",
+							"",
+							"pm.test(\"Each donor has required properties\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor).to.have.property('DonorName');",
+							"        pm.expect(donor).to.have.property('DonorGender');",
+							"        pm.expect(donor).to.have.property('DonorAvailability');",
+							"        pm.expect(donor).to.have.property('BloodGroupCode');",
+							"        pm.expect(donor).to.have.property('id');",
+							"    });",
+							"});",
+							"",
+							"// 3. Data Validation for Donors",
+							"pm.test(\"DonorName is a non-empty string\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.DonorName).to.be.a('string');",
+							"        pm.expect(donor.DonorName.length).to.be.above(0);",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"DonorGender is a string\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.DonorGender).to.be.a('string');",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"DonorAvailability is a boolean\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.DonorAvailability).to.be.a('boolean');",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"BloodGroupCode is a number\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.BloodGroupCode).to.be.a('number');",
+							"        pm.expect(donor.BloodGroupCode).to.be.above(0);",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"ID is a string\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.id).to.be.a('string');",
+							"        pm.expect(donor.id.length).to.be.above(0);",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"All donor IDs are unique\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    const ids = jsonData.map(donor => donor.id);",
+							"    const uniqueIds = [...new Set(ids)];",
+							"    pm.expect(ids.length).to.equal(uniqueIds.length);",
+							"});",
+							"",
+							"// 4. Response Performance",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"",
+							"// 5. Additional Response Headers Validation",
+							"pm.test(\"Content-Type header is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Response size is reasonable\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(1000000); // Less than 1MB",
+							"});",
+							"",
+							"pm.test(\"Schema: No additional nested objects in donor records\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        Object.values(donor).forEach(value => {",
+							"            if (typeof value === 'object' && value !== null) {",
+							"                pm.expect.fail('Donor record should not contain nested objects');",
+							"            }",
+							"        });",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Schema: No array values in donor properties\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        Object.values(donor).forEach(value => {",
+							"            pm.expect(Array.isArray(value)).to.be.false;",
+							"        });",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Boundary: BloodGroupCode minimum valid value (100)\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    const minCodes = jsonData.filter(donor => donor.BloodGroupCode >= 100);",
+							"    pm.expect(minCodes.length).to.equal(jsonData.length);",
+							"});",
+							"",
+							"pm.test(\"Boundary: BloodGroupCode maximum valid value (599)\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    const maxCodes = jsonData.filter(donor => donor.BloodGroupCode <= 599);",
+							"    pm.expect(maxCodes.length).to.equal(jsonData.length);",
+							"});",
+							"",
+							"pm.test(\"Boundary: DonorName minimum length (at least 1 character)\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.DonorName.length).to.be.at.least(1);",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Boundary: DonorName maximum length (reasonable limit)\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.DonorName.length).to.be.at.most(100);",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Boundary: DonorGender minimum length (at least 1 character)\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.DonorGender.length).to.be.at.least(1);",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Boundary: DonorGender maximum length (reasonable limit)\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.DonorGender.length).to.be.at.most(50);",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Boundary: ID minimum length (at least 1 character)\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect(donor.id.length).to.be.at.least(1);",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Boundary: Response array size is reasonable (not empty, not too large)\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.be.at.least(1);",
+							"    pm.expect(jsonData.length).to.be.at.most(10000);",
+							"});",
+							"",
+							"pm.test(\"Boundary: DonorAvailability only accepts true or false\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(donor => {",
+							"        pm.expect([true, false]).to.include(donor.DonorAvailability);",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https:/{{URL}}/donors",
+					"host": [
+						"https"
+					],
+					"port": "",
+					"path": [
+						"{{URL}}",
+						"donors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add a new donor",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https:/{{URL}}/donors",
+					"host": [
+						"https"
+					],
+					"port": "",
+					"path": [
+						"{{URL}}",
+						"donors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Blood Donor ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectiveVariables.set(\"id\",pm.response.json().id)                                      "
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https:/{{URL}}/donors/{{id}}",
+					"host": [
+						"https"
+					],
+					"port": "",
+					"path": [
+						"{{URL}}",
+						"donors",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "donorcollection",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https:/{{URL}}/donors",
+					"host": [
+						"https"
+					],
+					"port": "",
+					"path": [
+						"{{URL}}",
+						"donors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete a donor",
+			"request": {
+				"method": "DELETE",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "{[baseURL}}",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "URL",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "Id",
+			"value": ""
+		},
+		{
+			"key": "id",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
